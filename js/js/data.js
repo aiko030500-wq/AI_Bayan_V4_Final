@@ -30,8 +30,8 @@ window.BAYAN = {
       {title:"Review", audio:"Repeat: vowels, diphthongs, silent letters, stress.",
        task:{type:"fill", prompt:"Write the word with silent k: ____", answer:"knife"}},
     ]
-  },
-
+  } 
+};  
   grammar: {
     title: "Grammar",
     items: [
