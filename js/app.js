@@ -1,165 +1,148 @@
-const state = { name: "", section: "" };
-const EL = s => document.querySelector(s);
-const playDing = () => EL('#ding')?.play();
+const S = s => document.querySelector(s);
+const SA = s => Array.from(document.querySelectorAll(s));
+const speak = (t) => {
+  try { const u = new SpeechSynthesisUtterance(t); u.lang = "en-GB"; speechSynthesis.speak(u); } catch(e){}
+};
 
-// Splash → Login
-setTimeout(() => {
-  EL('#splash').classList.add('hidden');
-  EL('#login').classList.remove('hidden');
-}, 1000);
+const state = { name:"", sectionKey:"", index:0 };
 
-// Login
-EL('#loginBtn').addEventListener('click', () => {
-  const pin = EL('#pinInput').value.trim();
-  const name = EL('#nameInput').value.trim() || "Student";
-  if (pin === "7856") {
-    playDing();
+setTimeout(()=>{ S('#splash').classList.add('hidden'); S('#login').classList.remove('hidden'); }, 800);
+
+S('#loginBtn').addEventListener('click', ()=>{
+  const pin = S('#pinInput').value.trim();
+  const name = S('#nameInput').value.trim() || "Student";
+  if(pin === "7856"){
     state.name = name;
-    EL('#userLabel').textContent = name;
+    S('#userLabel').textContent = name;
+    const ding = S('#ding'); if(ding) ding.play();
     show('menu');
-  } else {
-    alert("Access code is incorrect. Try again.");
-  }
+  } else alert("Access code is incorrect. Try again.");
 });
 
-// Navigation
-EL('#backToLogin').addEventListener('click', () => show('login'));
-EL('#backToMenu').addEventListener('click', () => show('menu'));
+S('#backToLogin').addEventListener('click', ()=>show('login'));
+S('#backToMenu').addEventListener('click', ()=>show('menu'));
+SA('#menu .tile').forEach(b=>b.addEventListener('click', ()=>openSection(b.dataset.target)));
 
-document.querySelectorAll('#menu .tile').forEach(btn => {
-  btn.addEventListener('click', () => openSection(btn.dataset.target));
-});
-
-function show(id) {
-  ['login', 'menu', 'section', 'splash'].forEach(x => EL('#' + x).classList.add('hidden'));
-  EL('#' + id).classList.remove('hidden');
+function show(id){
+  ['login','menu','section','splash'].forEach(x=>S('#'+x).classList.add('hidden'));
+  S('#'+id).classList.remove('hidden');
 }
 
-function openSection(key) {
-  state.section = key;
-  EL('#sectionTitle').textContent = titleFor(key);
-  renderSection(key);
+function openSection(key){
+  state.sectionKey = key;
+  state.index = 0;
+  S('#sectionTitle').textContent = titleFor(key);
+  renderCard();
   show('section');
 }
 
-function titleFor(key) {
-  return {
-    phonetics: "Phonetics",
-    grammar: "Grammar",
-    reading: "Reading",
-    writing: "Writing / Dictation",
-    speaking: "Speaking",
-    listening: "Listening",
-    irregular: "Irregular Verbs",
-    time: "Time",
-    vocabulary: "Dictionary",
-    numbers: "Numbers & Dates",
-  }[key] || key;
+function titleFor(key){
+  const map = {
+    phonetics:"Phonetics", grammar:"Grammar", reading:"Reading", writing:"Writing / Dictation",
+    speaking:"Speaking", listening:"Listening", irregular:"Irregular Verbs",
+    time:"Time", vocabulary:"Dictionary", numbers:"Numbers & Dates",
+  };
+  return map[key] || key;
 }
 
-function renderSection(key) {
-  const body = EL('#sectionBody');
+function getSectionData(){
+  const d = window.BAYAN;
+  return d[state.sectionKey];
+}
+
+function renderCard(){
+  const sec = getSectionData();
+  const items = sectionItems(sec);
+  const i = state.index;
+  const item = items[i];
+
+  const body = S('#sectionBody');
   body.innerHTML = "";
 
-  const speak = text => {
-    try {
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = "en-GB";
-      speechSynthesis.speak(u);
-    } catch (e) {
-      console.log(e);
-    }
-  };
+  const wrap = document.createElement('div');
+  wrap.className = 'card';
+  wrap.innerHTML = `<h3>${i+1}. ${item.title || sec.title}</h3>`;
 
-  if (key === "phonetics") {
-    body.innerHTML = `
-      <div class="card">
-        <h3>Phonetics: Sounds & Diphthongs</h3>
-        <p>Practice all English sounds, diphthongs, and silent letters.</p>
-        <ul>
-          <li>Short vowels – <b>a, e, i, o, u</b></li>
-          <li>Long vowels – <b>name, see, ride</b></li>
-          <li>Diphthongs – <b>rain, house, boy, near, hair</b></li>
-          <li>Silent letters – <b>knife, write, lamb, night, walk, make</b></li>
-        </ul>
-        <button class="primary" id="ph-speak">🔊 Listen example</button>
-      </div>`;
-    EL("#ph-speak").addEventListener("click", () =>
-      speak("A as in apple, B as in ball, C as in cat, D as in dog.")
-    );
-  }
+  // Optional rule/text
+  if(item.rule) wrap.innerHTML += `<p class="muted">${item.rule}</p>`;
+  if(item.text) wrap.innerHTML += `<p>${item.text}</p>`;
+  if(item.words) wrap.innerHTML += `<p>${item.words.map(w=>`<span class="badge" style="margin:4px;display:inline-block">${w}</span>`).join(' ')}</p>`;
+  if(item.lines) wrap.innerHTML += `<p>${item.lines.join(' ')}</p>`;
 
-  if (key === "grammar") {
-    body.innerHTML = `
-      <div class="card">
-        <h3>Grammar Practice</h3>
-        <p>Fill in the blanks with correct forms.</p>
-        <div class="quiz">
-          <div class="row"><span>1.</span> I ___ happy. <input data-a="am"></div>
-          <div class="row"><span>2.</span> She ___ a pupil. <input data-a="is"></div>
-          <div class="row"><span>3.</span> They ___ friends. <input data-a="are"></div>
-          <button class="primary" id="checkGrammar">Check</button>
-        </div>
-      </div>`;
-    EL("#checkGrammar").addEventListener("click", () => {
-      let correct = 0;
-      EL(".quiz").querySelectorAll("input").forEach(i => {
-        if (i.value.trim().toLowerCase() === i.dataset.a) correct++;
-      });
-      alert(`You got ${correct}/3 correct!`);
-    });
-  }
+  // Listen button
+  const ttsText = item.audio || item.text || (item.lines? item.lines.join(' '): "");
+  const listenBtn = document.createElement('button');
+  listenBtn.className='secondary';
+  listenBtn.textContent='🔊 Listen';
+  listenBtn.addEventListener('click', ()=>speak(ttsText || "Listen."));
+  wrap.appendChild(listenBtn);
 
-  if (key === "irregular") {
-    body.innerHTML = `
-      <div class="card">
-        <h3>Irregular Verbs (50)</h3>
-        <table style="width:100%">
-          <tr><th>Infinitive</th><th>Past Simple</th><th>Past Participle</th><th>Translation</th></tr>
-          <tr><td>go</td><td>went</td><td>gone</td><td>идти</td></tr>
-          <tr><td>see</td><td>saw</td><td>seen</td><td>видеть</td></tr>
-          <tr><td>make</td><td>made</td><td>made</td><td>делать</td></tr>
-          <tr><td>write</td><td>wrote</td><td>written</td><td>писать</td></tr>
-          <tr><td>come</td><td>came</td><td>come</td><td>приходить</td></tr>
-        </table>
-      </div>`;
-  }
+  // Task renderer
+  if(item.task){ wrap.appendChild(renderTask(item.task)); }
 
-  if (key === "time") {
-    body.innerHTML = `
-      <div class="card">
-        <h3>Time Practice</h3>
-        <p>Write the correct time in words:</p>
-        <div class="quiz">
-          <div class="row"><span>1.</span> 12:00 → <input placeholder="twelve o'clock"></div>
-          <div class="row"><span>2.</span> 9:30 → <input placeholder="half past nine"></div>
-          <div class="row"><span>3.</span> 11:45 → <input placeholder="quarter to twelve"></div>
-        </div>
-      </div>`;
-  }
+  // Nav
+  const nav = document.createElement('div');
+  nav.style.marginTop = '12px';
+  nav.innerHTML = `
+    <button class="secondary" id="prevBtn" ${i===0?'disabled':''}>Back</button>
+    <button class="primary" id="nextBtn" ${i===items.length-1?'disabled':''}>Next</button>
+  `;
+  wrap.appendChild(nav);
 
-  if (key === "vocabulary") {
-    body.innerHTML = `
-      <div class="card">
-        <h3>Vocabulary Game</h3>
-        <p>Guess the word:</p>
-        <p><b>It's a small animal that says "meow".</b></p>
-        <input id="vocInput" placeholder="Your answer">
-        <button class="primary" id="vocCheck">Check</button>
-      </div>`;
-    EL("#vocCheck").addEventListener("click", () => {
-      const v = EL("#vocInput").value.trim().toLowerCase();
-      if (v === "cat") alert("✅ Correct!");
-      else alert("❌ Try again.");
-    });
-  }
+  body.appendChild(wrap);
 
-  if (key === "numbers") {
-    body.innerHTML = `
-      <div class="card">
-        <h3>Numbers and Dates</h3>
-        <p>Practice numbers 1–100 and days of the week.</p>
-        <p>Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday.</p>
-      </div>`;
-  }
+  S('#prevBtn')?.addEventListener('click', ()=>{ state.index=Math.max(0, state.index-1); renderCard(); });
+  S('#nextBtn')?.addEventListener('click', ()=>{ state.index=Math.min(items.length-1, state.index+1); renderCard(); });
 }
+
+function sectionItems(sec){
+  if(!sec) return [];
+  // special shapes
+  if(sec.items) return sec.items;
+  return [];
+}
+
+function renderTask(task){
+  const box = document.createElement('div');
+  box.className='quiz';
+  if(task.type==='tf'){
+    box.innerHTML = `
+      <div class="row"><span>Q.</span> <span style="flex:1">${task.prompt}</span>
+        <select id="ans"><option>True</option><option>False</option></select>
+      </div>
+      <button class="primary" id="check">Check</button>
+    `;
+    setTimeout(()=> S('#check').addEventListener('click', ()=>{
+      const v = S('#ans').value;
+      alert(v===task.answer ? "✅ Correct!" : "❌ Try again.");
+    }),0);
+  }
+  else if(task.type==='tf6'){
+    box.innerHTML = task.pairs.map((p,i)=>`
+      <div class="row"><span>${i+1}.</span> <span style="flex:1">${p[0]}</span>
+        <select class="t6"><option>True</option><option>False</option></select>
+      </div>
+    `).join('') + `<button class="primary" id="check">Check</button>`;
+    setTimeout(()=> S('#check').addEventListener('click', ()=>{
+      const sels = SA('.t6');
+      let ok=0;
+      sels.forEach((s,i)=>{ if(s.value === (task.pairs[i][1]?'True':'False')) ok++; });
+      alert(`You got ${ok} / ${sels.length}!`);
+    }),0);
+  }
+  else if(task.type==='fill'){
+    box.innerHTML = `
+      <div class="row"><span>Q.</span> <span style="flex:1">${task.prompt}</span>
+        <input id="ans" placeholder="type here">
+      </div>
+      <button class="primary" id="check">Check</button>
+    `;
+    setTimeout(()=> S('#check').addEventListener('click', ()=>{
+      const v = S('#ans').value.trim().toLowerCase();
+      const a = String(task.answer).trim().toLowerCase();
+      alert(v===a ? "✅ Correct!" : `❌ Try again.`);
+    }),0);
+  }
+  return box;
+}
+
