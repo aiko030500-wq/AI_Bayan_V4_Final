@@ -13,7 +13,10 @@
       <h1>AI Bayan 2025</h1>
     </div>
   </div>
-<audio id="ding" src="ding-sound-effect_2.mp3" preload="auto"></audio>
+
+  <!-- ОСТАВЛЯЕМ ТОЛЬКО ЭТОТ АУДИО -->
+  <audio id="ding" src="ding-sound-effect_2.mp3" preload="auto"></audio>
+
   <div id="login" class="screen center hidden">
     <h1>English with AI Bayan V4</h1>
     <p class="muted">Welcome! Please enter your name and access code.</p>
@@ -23,7 +26,7 @@
       <label>Access code</label>
       <input id="pinInput" placeholder="Enter your access code" type="password" maxlength="10"/>
       <button id="loginBtn" class="primary">Login</button>
-      <audio id="ding" src="assets/ding.wav" preload="auto"></audio>
+      <!-- УДАЛЁН ДУБЛЬ <audio id="ding"> -->
     </div>
     <p class="footnote">AI Bayan 2025</p>
   </div>
@@ -68,6 +71,7 @@
     </div>
   </div>
 
+  <!-- Порядок подключений правильный: сначала data.js, потом app.js -->
   <script src="js/data.js"></script>
   <script src="js/app.js"></script>
 </body>
