@@ -32,7 +32,7 @@ window.BAYAN = {
     ]
   } 
 }; 
-},
+
   grammar: {
     title: "Grammar",
     items: [
