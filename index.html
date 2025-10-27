@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="css/style.css"/>
 </head>
 <body>
+  <!-- Splash screen -->
   <div id="splash" class="screen center fade-in">
     <div class="logo-card">
       <div class="logo-circle">AI</div>
@@ -14,9 +15,10 @@
     </div>
   </div>
 
-  <!-- ОСТАВЛЯЕМ ТОЛЬКО ЭТОТ АУДИО -->
+  <!-- Single audio element for all sounds -->
   <audio id="ding" src="ding-sound-effect_2.mp3" preload="auto"></audio>
 
+  <!-- Login screen -->
   <div id="login" class="screen center hidden">
     <h1>English with AI Bayan V4</h1>
     <p class="muted">Welcome! Please enter your name and access code.</p>
@@ -26,11 +28,11 @@
       <label>Access code</label>
       <input id="pinInput" placeholder="Enter your access code" type="password" maxlength="10"/>
       <button id="loginBtn" class="primary">Login</button>
-      <!-- УДАЛЁН ДУБЛЬ <audio id="ding"> -->
     </div>
     <p class="footnote">AI Bayan 2025</p>
   </div>
 
+  <!-- Menu screen -->
   <div id="menu" class="screen hidden">
     <header>
       <div class="brand">
@@ -58,6 +60,7 @@
     </div>
   </div>
 
+  <!-- Section screen -->
   <div id="section" class="screen hidden">
     <div class="section-header">
       <button class="secondary" id="backToMenu">Back</button>
@@ -71,8 +74,9 @@
     </div>
   </div>
 
-  <!-- Порядок подключений правильный: сначала data.js, потом app.js -->
+  <!-- Correct order of scripts + version numbers -->
   <script src="js/data.js?v=3"></script>
-<script src="js/app.js?v=3"></script>
+  <script src="js/app.js?v=3"></script>
 </body>
 </html>
+
