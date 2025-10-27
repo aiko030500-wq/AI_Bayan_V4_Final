@@ -31,7 +31,8 @@ window.BAYAN = {
        task:{type:"fill", prompt:"Write the word with silent k: ____", answer:"knife"}},
     ]
   } 
-};  
+}; 
+},
   grammar: {
     title: "Grammar",
     items: [
