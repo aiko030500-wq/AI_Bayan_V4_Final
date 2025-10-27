@@ -1,5 +1,5 @@
-// English with AI Bayan V4 — FULL DATA (Variant A: cards)
-// All-English content, A1–A2, 10 sections × 12 topics, with answers.
+// English with AI Bayan V4 — FULL DATA (Variant A: cards, EN-only)
+// 10 sections × 12 items, A1–A2, with answers for auto-check.
 
 window.BAYAN = {
   phonetics: {
@@ -88,7 +88,7 @@ window.BAYAN = {
           ["She has a sister.", false]
          ]}},
       {title:"At School", text:"Our school is friendly. My classroom is bright and clean. We read, draw and do projects. I like my teacher.",
-       task:{type:"tf6", pairs:[["School is friendly.", true],["Classroom is dark.", false],["They draw pictures.", true],["They never read.", false],["They do projects.", true],["Student hates teacher.", false]]}},
+       task:{type:"tf6", pairs:[["School is friendly.", true],["Classroom is dark.", false],["They draw pictures.", true],["They never read.", false],["They do projects.", true],["Student likes the teacher.", true]]}},
       {title:"My Pet", text:"I have a small dog named Coco. He is playful and kind. We run in the park every morning and he loves to catch a ball.",
        task:{type:"tf6", pairs:[["Coco is a cat.", false],["Coco is playful.", true],["They run in the park.", true],["They run at night.", false],["He loves a ball.", true],["Dog is big.", false]]}},
       {title:"My House", text:"Our house is cozy. There is a small garden with flowers. We have a kitchen, a living room and two bedrooms.",
